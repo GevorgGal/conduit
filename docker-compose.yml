@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  influxdb:
+    image: influxdb:2.0
+    ports:
+      - '8086:8086'
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=myuser
+      - DOCKER_INFLUXDB_INIT_PASSWORD=mypassword
+      - DOCKER_INFLUXDB_INIT_ORG=myorg
+      - DOCKER_INFLUXDB_INIT_BUCKET=mybucket
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=myadmintoken
+
+  conduit-connector-influxdb:
+    build: .
+    ports:
+      - '8080:8080'
+    depends_on:
+      - influxdb
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=myadmintoken
+      - INFLUXDB_ORG=myorg
+      - INFLUXDB_BUCKET=mybucket
+
+volumes:
+  influxdb_data:
